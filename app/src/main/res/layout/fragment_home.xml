@@ -9,7 +9,8 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
 
         <Button
             android:id="@+id/start_btn"
@@ -17,6 +18,22 @@
             android:layout_height="wrap_content"
             android:backgroundTint="@color/gray"
             android:text="@string/home_btn"
+            android:textColor="@color/black"/>
+
+        <Button
+            android:id="@+id/score_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/gray"
+            android:text="@string/score_btn"
+            android:textColor="@color/black"/>
+
+        <Button
+            android:id="@+id/ext_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/gray"
+            android:text="@string/ext_btn"
             android:textColor="@color/black"/>
     </LinearLayout>
 </FrameLayout>
