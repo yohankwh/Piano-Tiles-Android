@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 
-public class GameFragment extends Fragment{
+public class GameFragment extends Fragment implements View.OnClickListener {
     private FragmentListener fragmentListener;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -28,5 +31,10 @@ public class GameFragment extends Fragment{
             throw new ClassCastException(context.toString()
                     + "must implement FragmentListener");
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

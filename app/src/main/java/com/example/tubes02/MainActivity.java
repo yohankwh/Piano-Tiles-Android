@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
     private MainPresenter presenter;
     private HomeFragment homeFragment;
     private GameFragment gameFragment;
+    private MediaPlayers mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
         this.homeFragment = new HomeFragment();
         this.gameFragment = new GameFragment();
 
+        this.mediaPlayer = new MediaPlayers();
+
         ft.add(R.id.fragment_container, this.homeFragment)
                 .addToBackStack(null)
                 .commit();
@@ -36,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
         if(page==2){
             if(this.gameFragment.isAdded()){
                 ft.show(this.gameFragment);
+
+
             }else{
                 ft.add(R.id.fragment_container, this.gameFragment)
                         .addToBackStack(null);

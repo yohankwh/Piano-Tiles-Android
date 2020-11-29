@@ -4,17 +4,16 @@ import android.media.MediaPlayer;
 import android.view.View;
 import android.widget.Toast;
 
-public class MediaPlayers {
+public class MediaPlayers extends MainActivity {
     private MediaPlayer mediaPlayer;
 
     public void play(View v){
         if(this.mediaPlayer == null){
-            this.mediaPlayer = MediaPlayer.create(this, R.raw.Dramaturgy);
+            this.mediaPlayer = MediaPlayer.create(this, R.raw.dramaturgy);
             this.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    stopPlayer;
-                }
+                    stopPlayer();                }
             });
         }
         mediaPlayer.start();
