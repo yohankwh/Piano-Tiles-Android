@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.core.content.res.ResourcesCompat;
@@ -29,6 +31,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
 
     private TextView startBtn;
     private int tileWidth;
+    private int heightLimit;
 
     public void setUIThreadHandler(UIThreadHandler ui){
         this.uiThreadHandler = ui;
@@ -68,11 +71,20 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         this.resetCanvas();
         this.ivCanvas.setOnTouchListener(this);
         this.tileWidth = this.ivCanvas.getWidth()/3;
+        this.heightLimit = this.ivCanvas.getHeight();
 
         int[] initPos = {10, 50};
-        MoveThread threadObj = new MoveThread(this.uiThreadHandler, initPos, ivCanvas.getHeight());
-        threadObj.moveObject();
+        int[] initPos2 = {this.tileWidth+10, 0};
+        int[] initPos3 = {this.tileWidth*2+10, 80};
+//        MoveThread threadObj = new MoveThread(this.uiThreadHandler, initPos, ivCanvas.getHeight());
+//        threadObj.moveObject();
 
+        DrawerAsyncTask dat = new DrawerAsyncTask();
+        dat.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initPos[0], initPos[1]);
+        DrawerAsyncTask dat2 = new DrawerAsyncTask();
+        dat2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initPos2[0], initPos2[1]);
+        DrawerAsyncTask dat3 = new DrawerAsyncTask();
+        dat3.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initPos3[0], initPos3[1]);
     }
 
     public void resetCanvas(){
@@ -134,5 +146,52 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         return this.ivCanvas.getMaxHeight();
     }
 
+
+    private class DrawerAsyncTask extends AsyncTask<Integer, Integer, String>{
+
+        protected void onPreExecute(){
+//            this.countNumber = 0;
+        }
+
+        protected void onProgressUpdate(Integer... progress){
+            int count = progress[0];
+//            counterView.setText(Integer.toString(count));
+        }
+
+        protected void onPostExecute(String result){
+//            btn.setText("START");
+//            counterView.setText("0");
+//            countNumber = 0;
+//            Toast toast = Toast.makeText(counterView.getContext(),"Counter "+(position+1)+" finished", Toast.LENGTH_SHORT);
+//            toast.show();
+//            //Challenge 7.
+//            renewJob();
+        }
+
+        @Override
+        protected String doInBackground(Integer... integers) {
+            int posX = integers[0];
+            int posY = integers[1];
+
+            Log.d("x is: ",posX+"");
+            Log.d("y is: ",posY+"");
+
+            int incrY = 20;
+
+            int arrPos[] = {posX, posY};
+
+            while(arrPos[1]<heightLimit){
+                try{
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                move(arrPos[0],arrPos[1]);
+
+                arrPos[1] = arrPos[1]+incrY;
+            }
+            return null;
+        }
+    }
 }
 
