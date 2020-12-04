@@ -1,15 +1,27 @@
 package com.example.tubes02;
 
+import android.app.Service;
+import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Toast;
 
-public class MediaPlayers extends MainActivity {
+import androidx.annotation.Nullable;
+
+public class MediaPlayers extends Service implements MediaPlayer.OnErrorListener{
     private MediaPlayer mediaPlayer;
 
-    public void play(View v){
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        this.play();
+    }
+
+    public void play(){
         if(this.mediaPlayer == null){
-            this.mediaPlayer = MediaPlayer.create(this, R.raw.dramaturgy);
+            this.mediaPlayer = MediaPlayer.create(this, R.raw.silhouette);
+            mediaPlayer.setVolume(1.0f, 1.0f);
             this.mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
@@ -17,6 +29,8 @@ public class MediaPlayers extends MainActivity {
             });
         }
         mediaPlayer.start();
+        Toast.makeText(getApplicationContext(), "Silhoutte is playing",    Toast.LENGTH_SHORT).show();
+
     }
 
     public void pause(View v){
@@ -30,6 +44,7 @@ public class MediaPlayers extends MainActivity {
     }
 
     private void stopPlayer(){
+        this.mediaPlayer.stop();
         if(this.mediaPlayer != null){
             this.mediaPlayer.release();
             this.mediaPlayer = null;
@@ -38,8 +53,25 @@ public class MediaPlayers extends MainActivity {
     }
 
     @Override
-    protected void onStop(){
-        super.onStop();
-        stopPlayer();
+    public void onDestroy() {
+        mediaPlayer.stop();
+        mediaPlayer.release();
+    }
+//
+//    @Override
+//    protected void onStop(){
+//        super.onStop();
+//        stopPlayer();
+//    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        return false;
     }
 }

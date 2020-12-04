@@ -4,8 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity implements FragmentListener{
     private FragmentManager fragmentManager;
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
     public void changePage(int page) {
         FragmentTransaction ft = this.fragmentManager.beginTransaction();
         if(page==2){
+            this.PlayMusic();
             if(this.gameFragment.isAdded()){
                 ft.show(this.gameFragment);
 
@@ -54,6 +58,19 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
             }
         }
         ft.commit();
+    }
+
+    public void PlayMusic() {
+        Log.d("debugg", "laguintent");
+        Intent intent = new Intent(this, MediaPlayers.class);
+        startService(intent);
+
+    }
+
+    @Override
+    public void closeApplication(){
+        this.moveTaskToBack(true);
+        this.finish();
     }
 
     public void move(int x, int y){
