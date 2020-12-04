@@ -1,11 +1,13 @@
 package com.example.tubes02;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -126,4 +129,10 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     public void checkAction(int x, int y){
         //if x, y is in range within the rectangle, add score, else game over?
     }
+
+    public int getHeightCanvas(){
+        return this.ivCanvas.getMaxHeight();
+    }
+
 }
+

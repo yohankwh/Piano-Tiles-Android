@@ -9,8 +9,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-public class MediaPlayers extends Service implements MediaPlayer.OnErrorListener{
+import java.util.ArrayList;
+
+public class MediaPlayers extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
+        MediaPlayer.OnCompletionListener {
     private MediaPlayer mediaPlayer;
+
+    private ArrayList<Song> songs;
 
     @Override
     public void onCreate() {
@@ -71,7 +76,17 @@ public class MediaPlayers extends Service implements MediaPlayer.OnErrorListener
     }
 
     @Override
+    public void onCompletion(MediaPlayer mp) {
+
+    }
+
+    @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         return false;
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+
     }
 }

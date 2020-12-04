@@ -13,11 +13,14 @@ public class UIThreadHandler extends Handler {
     protected final static int MSG_MOVE_OBJECT_OUTPUT=123;
     protected MainActivity mainActivity;
     protected boolean flag;
+    protected int[] arr1;
 
     public UIThreadHandler(MainActivity mainActivity){
         this.mainActivity = mainActivity;
         this.flag = true;
     }
+
+
 
     @Override
     public void handleMessage(Message msg){
@@ -28,6 +31,7 @@ public class UIThreadHandler extends Handler {
     }
 
     public void move(int[] arrPos){
+        this.arr1 = arrPos;
         Message msg = new Message();
         msg.what = MSG_MOVE_OBJECT_OUTPUT;
         msg.obj = arrPos;
@@ -44,4 +48,11 @@ public class UIThreadHandler extends Handler {
     public boolean getFlag(){
         return this.flag;
     }
+
+
+    public int[] getArr1(){
+        return this.arr1;
+    }
+
+
 }
