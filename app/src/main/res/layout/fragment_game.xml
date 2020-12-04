@@ -40,5 +40,11 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tv_game_start"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Press to Start"
+        android:gravity="center"/>
 
 </FrameLayout>

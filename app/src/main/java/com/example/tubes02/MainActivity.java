@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
     private HomeFragment homeFragment;
     private GameFragment gameFragment;
     private MediaPlayers mediaPlayer;
+    private UIThreadHandler uiThreadHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +24,11 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
         this.fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction ft = this.fragmentManager.beginTransaction();
 
+        this.uiThreadHandler = new UIThreadHandler(this);
+
         this.homeFragment = new HomeFragment();
         this.gameFragment = new GameFragment();
+        this.gameFragment.setUIThreadHandler(this.uiThreadHandler);
 
         this.mediaPlayer = new MediaPlayers();
 
@@ -50,5 +54,9 @@ public class MainActivity extends AppCompatActivity implements FragmentListener{
             }
         }
         ft.commit();
+    }
+
+    public void move(int x, int y){
+        this.gameFragment.move(x,y);
     }
 }
