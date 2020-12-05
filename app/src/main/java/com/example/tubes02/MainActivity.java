@@ -6,11 +6,12 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
+
+//import com.example.tubes02.TempRepo.AppConstants;
+//import com.example.tubes02.TempRepo.GameActivity;
 
 public class MainActivity extends AppCompatActivity implements FragmentListener, View.OnClickListener{
     private FragmentManager fragmentManager;
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.back=true;
+
+//        AppConstants.initialization(this.getApplicationContext());
 //        this.test[0]  =40;
 //        this.test[1] = 40;
         this.presenter = new MainPresenter(this);
@@ -59,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         FragmentTransaction ft = this.fragmentManager.beginTransaction();
         if(page==2){
             this.playMusic(!back);
+//            bgPianoTile();
             if(this.gameFragment.isAdded()){
                 ft.show(this.gameFragment);
 
@@ -131,4 +135,10 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         this.playMusic(this.back);
         super.onDestroy();
     }
+
+//    public void bgPianoTile(){
+//        Intent intent = new Intent(this, GameActivity.class);
+//        startActivity(intent);
+//        finish();
+//    }
 }
