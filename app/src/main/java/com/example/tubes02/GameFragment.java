@@ -32,7 +32,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     protected Bitmap mBitmap;
 
     private TextView startBtn, score_tv;
-    private TextView startBtn;
+
     private TextView scoreHolder;
     private int tileWidth;
     private int heightLimit;
@@ -81,6 +81,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     }
 
     public void initiateCanvas(){
+
         // 1. Create Bitmap
         this.mBitmap = Bitmap.createBitmap(this.ivCanvas.getWidth(),this.ivCanvas.getHeight(), Bitmap.Config.ARGB_8888);
         // 2. Associate the bitmap to the ImageView.
