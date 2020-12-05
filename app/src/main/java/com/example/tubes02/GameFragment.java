@@ -31,21 +31,16 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     protected ImageView ivCanvas;
     protected Bitmap mBitmap;
 
-    private TextView startBtn, score_tv;
-    private TextView startBtn;
-    private TextView scoreHolder;
+    private TextView startBtn, scoreHolder;
+    public boolean allowPass;
     private int tileWidth;
     private int heightLimit;
-    private boolean isLose;
-    private LinkedList<Tile> tileList;
-
 
     private int curX;
     private int curY;
 
     private int score;
 
-    public boolean allowPass;
 
     public void setUIThreadHandler(UIThreadHandler ui){
         this.uiThreadHandler = ui;
@@ -58,11 +53,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         this.ivCanvas = view.findViewById(R.id.iv_main);
         this.scoreHolder = view.findViewById(R.id.score_tv);
         this.startBtn = view.findViewById(R.id.tv_game_start);
-        this.score_tv = view.findViewById(R.id.score_tv);
         this.startBtn.setOnClickListener(this);
-        this.isLose=false;
-        this.tileList = new LinkedList<>();
-
         this.allowPass = false;
         this.score = 0;
 
@@ -81,6 +72,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     }
 
     public void initiateCanvas(){
+        this.uiThreadHandler.setFlagTrue();
         // 1. Create Bitmap
         this.mBitmap = Bitmap.createBitmap(this.ivCanvas.getWidth(),this.ivCanvas.getHeight(), Bitmap.Config.ARGB_8888);
         // 2. Associate the bitmap to the ImageView.
@@ -137,23 +129,10 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     public boolean onTouch(View view, MotionEvent motionEvent) {
         int x = (int)motionEvent.getX();
         int y = (int)motionEvent.getY();
+
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 this.checkAction(x, y);
-                Log.d("touch_listener", "down");
-                Log.d("POSITION", x+" "+y);
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-//                Log.d("touch_listener", "pointer_down");
-                break;
-            case MotionEvent.ACTION_UP:
-//                Log.d("touch_listener", "up");
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-//                Log.d("touch_listener", "pointer_up");
-                break;
-            case MotionEvent.ACTION_MOVE:
-//                Log.d("touch_listener", "move");
                 break;
         }
         return false;
@@ -177,66 +156,6 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     public void addScore(){
         this.score+=20;
         this.scoreHolder.setText(this.score+"");
-    }
-
-    public int getHeightCanvas(){
-        return this.ivCanvas.getMaxHeight();
-    }
-
-
-
-    private class DrawerAsyncTask extends AsyncTask<Integer, Integer, String>{
-        private int countNumber;
-        protected void onPreExecute(){
-//            this.countNumber = 0;
-        }
-
-        protected void onProgressUpdate(Integer... progress){
-            int count = progress[0];
-            score_tv.setText(Integer.toString(count));
-        }
-
-        protected void onPostExecute(String result) {
-//            btn.setText("START");
-//            counterView.setText("0");
-//            countNumber = 0;
-//            Toast toast = Toast.makeText(counterView.getContext(),"Counter "+(position+1)+" finished", Toast.LENGTH_SHORT);
-//            toast.show();
-//            //Challenge 7.
-//            renewJob();
-        }
-
-        protected void publishProgress(int count){
-            this.onProgressUpdate(count);
-        }
-
-
-        @Override
-        protected String doInBackground(Integer... integers) {
-
-            int posX = integers[0];
-            int posY = integers[1];
-
-            Log.d("x is: ",posX+"");
-            Log.d("y is: ",posY+"");
-
-            int incrY = 20;
-
-            int arrPos[] = {posX, posY};
-
-            while(arrPos[1]<heightLimit+20){
-                try{
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                move(arrPos[0],arrPos[1]);
-
-                arrPos[1] = arrPos[1]+incrY;
-            }
-            Log.d("finish", "true");
-            return null;
-        }
     }
 }
 
