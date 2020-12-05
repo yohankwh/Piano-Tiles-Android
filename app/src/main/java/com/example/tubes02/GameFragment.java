@@ -22,6 +22,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
+import java.util.LinkedList;
+
 public class GameFragment extends Fragment implements View.OnClickListener, View.OnTouchListener {
     protected UIThreadHandler uiThreadHandler;
     private FragmentListener fragmentListener;
@@ -30,8 +32,17 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     protected Bitmap mBitmap;
 
     private TextView startBtn;
+    private TextView scoreHolder;
     private int tileWidth;
     private int heightLimit;
+    private LinkedList<Tile> tileList;
+
+    private int curX;
+    private int curY;
+
+    private int score;
+
+    public boolean allowPass;
 
     public void setUIThreadHandler(UIThreadHandler ui){
         this.uiThreadHandler = ui;
@@ -42,9 +53,13 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_game, container, false);
         this.ivCanvas = view.findViewById(R.id.iv_main);
-
+        this.scoreHolder = view.findViewById(R.id.score_tv);
         this.startBtn = view.findViewById(R.id.tv_game_start);
         this.startBtn.setOnClickListener(this);
+        this.tileList = new LinkedList<>();
+
+        this.allowPass = false;
+        this.score = 0;
 
         return view;
     }
@@ -74,17 +89,12 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         this.heightLimit = this.ivCanvas.getHeight();
 
         int[] initPos = {10, 50};
-        int[] initPos2 = {this.tileWidth+10, 0};
-        int[] initPos3 = {this.tileWidth*2+10, 80};
-//        MoveThread threadObj = new MoveThread(this.uiThreadHandler, initPos, ivCanvas.getHeight());
-//        threadObj.moveObject();
+        MoveThread threadObj = new MoveThread(this.uiThreadHandler, initPos, this.ivCanvas.getHeight(), this.tileWidth);
+        threadObj.moveObject();
 
-        DrawerAsyncTask dat = new DrawerAsyncTask();
-        dat.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initPos[0], initPos[1]);
-        DrawerAsyncTask dat2 = new DrawerAsyncTask();
-        dat2.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initPos2[0], initPos2[1]);
-        DrawerAsyncTask dat3 = new DrawerAsyncTask();
-        dat3.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initPos3[0], initPos3[1]);
+//        DrawerAsyncTask dat = new DrawerAsyncTask();
+//        dat.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, initPos[0], initPos[1]);
+
     }
 
     public void resetCanvas(){
@@ -92,6 +102,10 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         this.mCanvas.drawColor(ResourcesCompat.getColor(getResources(), R.color.white, null));
         // 5. force draw
         this.ivCanvas.invalidate();
+    }
+
+    public void drawTile(){
+
     }
 
     @Override
@@ -103,6 +117,8 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     }
 
     public void move(int newPosX, int newPosY){
+        this.curX = newPosX;
+        this.curY = newPosY;
         this.resetCanvas();
         Paint paint = new Paint();
         int mColorTest = ResourcesCompat.getColor(getResources(),R.color.teal_200, null);
@@ -123,16 +139,16 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
                 Log.d("POSITION", x+" "+y);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                Log.d("touch_listener", "pointer_down");
+//                Log.d("touch_listener", "pointer_down");
                 break;
             case MotionEvent.ACTION_UP:
-                Log.d("touch_listener", "up");
+//                Log.d("touch_listener", "up");
                 break;
             case MotionEvent.ACTION_POINTER_UP:
-                Log.d("touch_listener", "pointer_up");
+//                Log.d("touch_listener", "pointer_up");
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.d("touch_listener", "move");
+//                Log.d("touch_listener", "move");
                 break;
         }
         return false;
@@ -140,12 +156,27 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
 
     public void checkAction(int x, int y){
         //if x, y is in range within the rectangle, add score, else game over?
+        if(x>=curX && x<=curX+tileWidth && y>curY && y<=curY+200){
+            this.allowPass = true;
+            this.addScore();
+        }else{
+            this.allowPass = false;
+            this.uiThreadHandler.setFlagFalse();
+        }
+    }
+
+    public void resetAllowPass(){
+        this.allowPass = false;
+    }
+
+    public void addScore(){
+        this.score+=20;
+        this.scoreHolder.setText(this.score+"");
     }
 
     public int getHeightCanvas(){
         return this.ivCanvas.getMaxHeight();
     }
-
 
     private class DrawerAsyncTask extends AsyncTask<Integer, Integer, String>{
 
@@ -180,9 +211,9 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
 
             int arrPos[] = {posX, posY};
 
-            while(arrPos[1]<heightLimit){
+            while(arrPos[1]<heightLimit+20){
                 try{
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -190,6 +221,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
 
                 arrPos[1] = arrPos[1]+incrY;
             }
+            Log.d("finish", "true");
             return null;
         }
     }

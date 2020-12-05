@@ -15,9 +15,10 @@ public class MoveThread implements Runnable{
     protected int curPosX;
     protected int curPosY;
     protected int heightLimit;
+    protected int tileWidth;
     private Handler handler;
 
-    public MoveThread(UIThreadHandler uiThreadHandler, int[] initPos, int maxY){
+    public MoveThread(UIThreadHandler uiThreadHandler, int[] initPos, int maxY, int tileWidth){
         this.uiThreadHandler = uiThreadHandler;
         this.thread = new Thread(this);
         this.handler =  new Handler(getMainLooper());
@@ -26,6 +27,7 @@ public class MoveThread implements Runnable{
         this.curPosY = initPos[1];
 
         this.heightLimit = maxY;
+        this.tileWidth = tileWidth;
     }
 
     public void moveObject(){
@@ -34,20 +36,44 @@ public class MoveThread implements Runnable{
 
     @Override
     public void run() {
-        int incrY = 20;
+        Random rand = new Random();
+        boolean check = true;
 
-        int arrPos[] = {this.curPosX, this.curPosY};
+        while(true){
 
-        while(arrPos[1]<this.heightLimit){
-            try{
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
+            int incrY = 40;
 
-                e.printStackTrace();
+            int multp = rand.nextInt(3);
+
+            int arrPos[] = {this.curPosX+this.tileWidth*multp, this.curPosY};
+
+            while(true){
+                if(!this.uiThreadHandler.getFlag()){break;}
+
+                if(arrPos[1]<this.heightLimit+20){//tile-pass-no-touch check
+                    try{
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    this.uiThreadHandler.move(arrPos);
+                    arrPos[1] = arrPos[1]+incrY;
+                }else{
+                    if(this.uiThreadHandler.isPassAllowed()){
+                        check = true;
+                        Log.d("Action is :","V A L I D");
+                    }else{
+                        check = false;
+                        Log.d("Action is :","NOT VALID");
+
+                    }
+                    break;
+                }
             }
-            this.uiThreadHandler.move(arrPos);
-
-            arrPos[1] = arrPos[1]+incrY;
+            if(!check){
+                break;
+            }
+            this.uiThreadHandler.resetCheck();
         }
     }
 

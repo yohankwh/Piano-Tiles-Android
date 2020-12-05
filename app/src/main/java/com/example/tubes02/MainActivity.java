@@ -30,28 +30,21 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.back=true;
-//        this.test[0]  =40;
-//        this.test[1] = 40;
+
         this.presenter = new MainPresenter(this);
         this.fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction ft = this.fragmentManager.beginTransaction();
 
         this.uiThreadHandler = new UIThreadHandler(this);
 
-
         this.homeFragment = new HomeFragment();
         this.gameFragment = new GameFragment();
         this.gameFragment.setUIThreadHandler(this.uiThreadHandler);
-//        this.moveThread = new MoveThread(uiThreadHandler,test ,300);
         this.mediaPlayer = new MediaPlayers();
-
-
 
         ft.add(R.id.fragment_container, this.homeFragment)
                 .addToBackStack(null)
                 .commit();
-
-
     }
 
     @Override
@@ -95,8 +88,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         this.gameFragment.move(x,y);
     }
 
-
-
     @Override
     public void onBackPressed() {
 //        this.moveThread.thread.interrupt();
@@ -118,11 +109,17 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         return this.back;
     }
 
+    public boolean isPassAllowed(){
+        return this.gameFragment.allowPass;
+    }
+
+    public void resetGameCheck(){
+        this.gameFragment.resetAllowPass();
+    }
 
     @Override
     public void onClick(View v) {
         this.back=false;
-
     }
 
     @Override
