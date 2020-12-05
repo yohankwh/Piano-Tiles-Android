@@ -1,19 +1,30 @@
 package com.example.tubes02;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.TextView;
+
+import java.util.List;
 
 //import com.example.tubes02.TempRepo.AppConstants;
 //import com.example.tubes02.TempRepo.GameActivity;
 
-public class MainActivity extends AppCompatActivity implements FragmentListener, View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements FragmentListener, View.OnClickListener, SensorEventListener, OrientationManager.OrientationListener{
     private FragmentManager fragmentManager;
     private MainPresenter presenter;
     private HomeFragment homeFragment;
@@ -23,7 +34,16 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     private boolean back;
 //    private MoveThread moveThread;
 //    private int[] test = new int[100];
-
+    private static final float VALUE_DRIFT = 0.05f;
+    private SensorManager mSensorManager;
+    private Sensor accelerometer;
+    private Sensor magnetometer;
+    private float[] accelerometerReading = new float[3];
+    private float[] magnetometerReading = new float[3];
+    private final float[] rotationMatrix = new float[9];
+    private final float[] orientationAngels = new float[3];
+    private int oritentation = -1;
+    private OrientationManager orientationManager;
 
 
     @Override
@@ -50,6 +70,24 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         ft.add(R.id.fragment_container, this.homeFragment)
                 .addToBackStack(null)
                 .commit();
+
+
+
+//        sensor
+        this.mSensorManager =  (SensorManager) getSystemService(
+                Context.SENSOR_SERVICE);
+
+        orientationManager = new OrientationManager(this, SensorManager.SENSOR_DELAY_NORMAL, this);
+        orientationManager.enable();
+
+        this.accelerometer = this.mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        this.magnetometer = this.mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        this.showAllSensor();
+
+        if(savedInstanceState != null){
+            savedInstanceState.getInt("count");
+        }
+
     }
 
     @Override
@@ -69,6 +107,9 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
             if(this.homeFragment.isAdded()){
                 ft.hide(this.homeFragment);
             }
+        }else{
+            Log.d("fragment", "ke destroy") ;
+            ft.remove(this.gameFragment).commit();
         }
         ft.commit();
     }
@@ -99,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 //        this.moveThread.thread.interrupt();
         this.back = true;
         this.playMusic(this.back);
+
 //        finish();
         super.onBackPressed();
     }
@@ -107,6 +149,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             Log.d(this.getClass().getName(), "back button pressed");
+            this.back = true;
+            this.playMusic(this.back);
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -140,4 +184,130 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 //        startActivity(intent);
 //        finish();
 //    }
+
+    public void showAllSensor(){
+        List<Sensor> sensorList = this.mSensorManager.getSensorList(Sensor.TYPE_ALL);
+
+        for(Sensor currentSensor : sensorList){
+            Log.d("Sensor", currentSensor.getName());
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(this.accelerometer != null){
+            this.mSensorManager.registerListener(this, this.accelerometer,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        }
+
+        if(this.magnetometer != null){
+            this.mSensorManager.registerListener(this, this.magnetometer,
+                    SensorManager.SENSOR_DELAY_NORMAL);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.mSensorManager.unregisterListener(this);
+    }
+
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        int sensorType = event.sensor.getType();
+        switch (sensorType){
+            case Sensor.TYPE_ACCELEROMETER:
+                this.accelerometerReading = event.values.clone();
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                this.magnetometerReading = event.values.clone();
+                break;
+        }
+
+        if(event.values[1]<6.5 && event.values[1]>-6.5){
+            if(oritentation != -1){
+                Log.d("Sensor", "Landscape");
+            }
+            oritentation = 1;
+        }else{
+            if(oritentation != 0){
+                Log.d("Sensor", "Portrait");
+            }
+            oritentation = 0;
+        }
+
+        this.mSensorManager.getRotationMatrix(rotationMatrix, null, this.accelerometerReading, this.magnetometerReading);
+        this.mSensorManager.getOrientation(rotationMatrix, orientationAngels);
+
+        float azimuth = orientationAngels[0];
+        float pitch = orientationAngels[1];
+        float roll = orientationAngels[2];
+
+        if(Math.abs(azimuth) < VALUE_DRIFT){
+            azimuth = 0;
+        }
+        if(Math.abs(pitch) < VALUE_DRIFT){
+            pitch = 0;
+        }
+        if(Math.abs(roll) < VALUE_DRIFT){
+            roll = 0;
+        }
+
+//        TextView tv_azimuth = findViewById(R.id.tv_azimuth_result);
+//        tv_azimuth.setText(azimuth+"");
+//
+//
+//        TextView tv_pitch = findViewById(R.id.tv_pitch_result);
+//        tv_pitch.setText(pitch+"");
+//
+//
+//        TextView tv_roll = findViewById(R.id.tv_roll_result);
+//        tv_roll.setText(roll+"");
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    public void onOrientationChange(OrientationManager.ScreenOrientation screenOrientation) {
+//        TextView tv_orientation = findViewById(R.id.tv_orientation_result);
+        switch(screenOrientation){
+            case PORTRAIT:
+
+//                tv_orientation.setText("reversed_potrait");
+                Log.d("oritentation", "reversed_potrait");
+            case REVERSED_PORTRAIT:
+                this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//                tv_orientation.setText("potrait");
+                Log.d("oritentation", "potrait");
+                break;
+            case REVERSED_LANDSCAPE:
+                this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+//                tv_orientation.setText("reversed_landscape");
+                Log.d("oritentation", "reversed_landscape");
+                break;
+            case LANDSCAPE:
+                this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//                tv_orientation.setText("landscape");
+                Log.d("oritentation", "landscape");
+                break;
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState, @NonNull PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        savedInstanceState.getInt("count");
+    }
 }
