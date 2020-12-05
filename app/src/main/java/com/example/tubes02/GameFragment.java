@@ -31,11 +31,14 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     protected ImageView ivCanvas;
     protected Bitmap mBitmap;
 
+    private TextView startBtn, score_tv;
     private TextView startBtn;
     private TextView scoreHolder;
     private int tileWidth;
     private int heightLimit;
+    private boolean isLose;
     private LinkedList<Tile> tileList;
+
 
     private int curX;
     private int curY;
@@ -55,7 +58,9 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         this.ivCanvas = view.findViewById(R.id.iv_main);
         this.scoreHolder = view.findViewById(R.id.score_tv);
         this.startBtn = view.findViewById(R.id.tv_game_start);
+        this.score_tv = view.findViewById(R.id.score_tv);
         this.startBtn.setOnClickListener(this);
+        this.isLose=false;
         this.tileList = new LinkedList<>();
 
         this.allowPass = false;
@@ -178,18 +183,20 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         return this.ivCanvas.getMaxHeight();
     }
 
-    private class DrawerAsyncTask extends AsyncTask<Integer, Integer, String>{
 
+
+    private class DrawerAsyncTask extends AsyncTask<Integer, Integer, String>{
+        private int countNumber;
         protected void onPreExecute(){
 //            this.countNumber = 0;
         }
 
         protected void onProgressUpdate(Integer... progress){
             int count = progress[0];
-//            counterView.setText(Integer.toString(count));
+            score_tv.setText(Integer.toString(count));
         }
 
-        protected void onPostExecute(String result){
+        protected void onPostExecute(String result) {
 //            btn.setText("START");
 //            counterView.setText("0");
 //            countNumber = 0;
@@ -199,8 +206,14 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
 //            renewJob();
         }
 
+        protected void publishProgress(int count){
+            this.onProgressUpdate(count);
+        }
+
+
         @Override
         protected String doInBackground(Integer... integers) {
+
             int posX = integers[0];
             int posY = integers[1];
 
@@ -226,4 +239,8 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         }
     }
 }
+
+
+
+
 

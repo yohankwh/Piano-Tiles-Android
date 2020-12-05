@@ -81,13 +81,13 @@ public class MoveThread implements Runnable{
         Thread.interrupted();
     }
 
-    private Runnable MyThread = new Runnable()
-    {
-        @Override
-        public void run() {
-            handler.removeCallbacks(MyThread);
-        }
-    };
+//    private Runnable MyThread = new Runnable()
+//    {
+//        @Override
+//        public void run() {
+//            handler.removeCallbacks(MyThread);
+//        }
+//    };
 
 
 
