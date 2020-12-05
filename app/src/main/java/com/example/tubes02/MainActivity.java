@@ -24,7 +24,7 @@ import java.util.List;
 //import com.example.tubes02.TempRepo.AppConstants;
 //import com.example.tubes02.TempRepo.GameActivity;
 
-public class MainActivity extends AppCompatActivity implements FragmentListener, View.OnClickListener, SensorEventListener, OrientationManager.OrientationListener{
+public class MainActivity extends AppCompatActivity implements FragmentListener, View.OnClickListener, SensorEventListener, OrientationManager.OrientationListener {
     private FragmentManager fragmentManager;
     private MainPresenter presenter;
     private HomeFragment homeFragment;
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     private MediaPlayers mediaPlayer;
     private UIThreadHandler uiThreadHandler;
     private boolean back;
-//    private MoveThread moveThread;
+    //    private MoveThread moveThread;
 //    private int[] test = new int[100];
     private static final float VALUE_DRIFT = 0.05f;
     private SensorManager mSensorManager;
@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.back=true;
+        this.back = true;
 
 //        AppConstants.initialization(this.getApplicationContext());
 //        this.test[0]  =40;
@@ -72,9 +72,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
                 .commit();
 
 
-
 //        sensor
-        this.mSensorManager =  (SensorManager) getSystemService(
+        this.mSensorManager = (SensorManager) getSystemService(
                 Context.SENSOR_SERVICE);
 
         orientationManager = new OrientationManager(this, SensorManager.SENSOR_DELAY_NORMAL, this);
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         this.magnetometer = this.mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         this.showAllSensor();
 
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             savedInstanceState.getInt("count");
         }
 
@@ -93,23 +92,25 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     @Override
     public void changePage(int page) {
         FragmentTransaction ft = this.fragmentManager.beginTransaction();
-        if(page==2){
-            this.playMusic(!back);
+        if (page == 2) {
+//            this.playMusic(!back);
 //            bgPianoTile();
-            if(this.gameFragment.isAdded()){
+            if (this.gameFragment.isAdded()) {
                 ft.show(this.gameFragment);
 
 
-            }else{
+            } else {
                 ft.add(R.id.fragment_container, this.gameFragment)
                         .addToBackStack(null);
             }
-            if(this.homeFragment.isAdded()){
+            if (this.homeFragment.isAdded()) {
                 ft.hide(this.homeFragment);
             }
-        }else{
-            Log.d("fragment", "ke destroy") ;
-            ft.remove(this.gameFragment).commit();
+        } else if (page == 1) {
+            if (this.homeFragment.isAdded()) {
+                ft.show(this.homeFragment);
+                ft.remove(this.gameFragment);
+            }
         }
         ft.commit();
     }
@@ -117,22 +118,22 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     public void playMusic(boolean check) {
         Log.d("debugg", "laguintent");
         Intent intent = new Intent(this, MediaPlayers.class);
-        if(check == true){
+        if (check == true) {
             stopService(intent);
-        }else {
+        } else {
             startService(intent);
         }
 
     }
 
     @Override
-    public void closeApplication(){
+    public void closeApplication() {
         this.moveTaskToBack(true);
         this.finish();
     }
 
-    public void move(int x, int y){
-        this.gameFragment.move(x,y);
+    public void move(int x, int y) {
+        this.gameFragment.move(x, y);
     }
 
     @Override
@@ -155,21 +156,21 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         return super.onKeyDown(keyCode, event);
     }
 
-    public boolean getBack(){
+    public boolean getBack() {
         return this.back;
     }
 
-    public boolean isPassAllowed(){
+    public boolean isPassAllowed() {
         return this.gameFragment.allowPass;
     }
 
-    public void resetGameCheck(){
+    public void resetGameCheck() {
         this.gameFragment.resetAllowPass();
     }
 
     @Override
     public void onClick(View v) {
-        this.back=false;
+        this.back = false;
     }
 
     @Override
@@ -185,10 +186,10 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 //        finish();
 //    }
 
-    public void showAllSensor(){
+    public void showAllSensor() {
         List<Sensor> sensorList = this.mSensorManager.getSensorList(Sensor.TYPE_ALL);
 
-        for(Sensor currentSensor : sensorList){
+        for (Sensor currentSensor : sensorList) {
             Log.d("Sensor", currentSensor.getName());
         }
     }
@@ -196,12 +197,12 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     @Override
     protected void onResume() {
         super.onResume();
-        if(this.accelerometer != null){
+        if (this.accelerometer != null) {
             this.mSensorManager.registerListener(this, this.accelerometer,
                     SensorManager.SENSOR_DELAY_NORMAL);
         }
 
-        if(this.magnetometer != null){
+        if (this.magnetometer != null) {
             this.mSensorManager.registerListener(this, this.magnetometer,
                     SensorManager.SENSOR_DELAY_NORMAL);
         }
@@ -217,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     @Override
     public void onSensorChanged(SensorEvent event) {
         int sensorType = event.sensor.getType();
-        switch (sensorType){
+        switch (sensorType) {
             case Sensor.TYPE_ACCELEROMETER:
                 this.accelerometerReading = event.values.clone();
                 break;
@@ -226,13 +227,13 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
                 break;
         }
 
-        if(event.values[1]<6.5 && event.values[1]>-6.5){
-            if(oritentation != -1){
+        if (event.values[1] < 6.5 && event.values[1] > -6.5) {
+            if (oritentation != -1) {
                 Log.d("Sensor", "Landscape");
             }
             oritentation = 1;
-        }else{
-            if(oritentation != 0){
+        } else {
+            if (oritentation != 0) {
                 Log.d("Sensor", "Portrait");
             }
             oritentation = 0;
@@ -245,13 +246,13 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         float pitch = orientationAngels[1];
         float roll = orientationAngels[2];
 
-        if(Math.abs(azimuth) < VALUE_DRIFT){
+        if (Math.abs(azimuth) < VALUE_DRIFT) {
             azimuth = 0;
         }
-        if(Math.abs(pitch) < VALUE_DRIFT){
+        if (Math.abs(pitch) < VALUE_DRIFT) {
             pitch = 0;
         }
-        if(Math.abs(roll) < VALUE_DRIFT){
+        if (Math.abs(roll) < VALUE_DRIFT) {
             roll = 0;
         }
 
@@ -275,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     @Override
     public void onOrientationChange(OrientationManager.ScreenOrientation screenOrientation) {
 //        TextView tv_orientation = findViewById(R.id.tv_orientation_result);
-        switch(screenOrientation){
+        switch (screenOrientation) {
             case PORTRAIT:
 
 //                tv_orientation.setText("reversed_potrait");
