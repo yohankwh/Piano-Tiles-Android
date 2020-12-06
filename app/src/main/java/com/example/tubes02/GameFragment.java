@@ -152,6 +152,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
             this.allowPass = false;
             this.uiThreadHandler.setFlagFalse();
             this.uiThreadHandler.setGameStop();
+
             if(this.highScore == this.score){
                 updateHighScore(this.score);
             }
@@ -161,6 +162,8 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     public void resetAllowPass(){
         this.allowPass = false;
     }
+
+    public int getScore(){return this.score;}
 
     public void addScore(int score){
         if(this.uiThreadHandler.getGameState()){

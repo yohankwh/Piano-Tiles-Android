@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -398,6 +399,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     }
     public void setGameStop(){
         this.gameStart = false;
+        Toast toast = Toast.makeText(this,"Game Over!\nYour Score: "+this.gameFragment.getScore(), Toast.LENGTH_SHORT);
+        toast.show();
     }
     public boolean getGameState(){
         return this.gameStart;
