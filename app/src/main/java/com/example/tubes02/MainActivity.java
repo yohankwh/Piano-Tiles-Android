@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 
         this.accelerometer = this.mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         this.magnetometer = this.mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        this.showAllSensor();
 
         if (savedInstanceState != null) {
             savedInstanceState.getInt("count");
@@ -212,15 +211,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 //        startActivity(intent);
 //        finish();
 //    }
-
-    public void showAllSensor() {
-        List<Sensor> sensorList = this.mSensorManager.getSensorList(Sensor.TYPE_ALL);
-
-        for (Sensor currentSensor : sensorList) {
-            Log.d("Sensor", currentSensor.getName());
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -249,6 +239,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
             case Sensor.TYPE_ACCELEROMETER:
                 this.accelerometerReading = event.values.clone();
                 if(gameStart){
+                    //shake detection taken from:
+                    //https://stackoverflow.com/questions/5271448/how-to-detect-shake-event-with-android#answer-32803134
                     long curTime = System.currentTimeMillis();
                     if ((curTime - mLastShakeTime) > MIN_TIME_BETWEEN_SHAKES_MILLISECS) {
 
