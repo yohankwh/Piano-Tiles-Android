@@ -36,8 +36,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     private MediaPlayers mediaPlayer;
     private UIThreadHandler uiThreadHandler;
     private boolean back;
-    //    private MoveThread moveThread;
-//    private int[] test = new int[100];
+    private boolean gameStart;
+
     private static final float VALUE_DRIFT = 0.05f;
     private SensorManager mSensorManager;
     private Sensor accelerometer;
@@ -45,16 +45,21 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     private float[] accelerometerReading = new float[3];
     private float[] magnetometerReading = new float[3];
     private final float[] rotationMatrix = new float[9];
-    private final float[] orientationAngels = new float[3];
+    private final float[] orientationAngles = new float[3];
     private int oritentation = -1;
     private OrientationManager orientationManager;
 
+    // variables for shake detection
+    private static final float SHAKE_THRESHOLD = 0.5f; // m/S**2
+    private static final int MIN_TIME_BETWEEN_SHAKES_MILLISECS = 1000;
+    private long mLastShakeTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.back = true;
+        this.gameStart = false;
 
         this.presenter = new MainPresenter(this, this);
         this.fragmentManager = this.getSupportFragmentManager();
@@ -242,6 +247,26 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         switch (sensorType) {
             case Sensor.TYPE_ACCELEROMETER:
                 this.accelerometerReading = event.values.clone();
+                if(gameStart){
+                    long curTime = System.currentTimeMillis();
+                    if ((curTime - mLastShakeTime) > MIN_TIME_BETWEEN_SHAKES_MILLISECS) {
+
+                        float x = event.values[0];
+                        float y = event.values[1];
+                        float z = event.values[2];
+
+                        double acceleration = Math.sqrt(Math.pow(x, 2) +
+                                Math.pow(y, 2) +
+                                Math.pow(z, 2)) - SensorManager.GRAVITY_EARTH;
+//                    Log.d("SHAKE","Acceleration is " + acceleration + "m/s^2");
+
+                        if (acceleration > SHAKE_THRESHOLD) {
+                            mLastShakeTime = curTime;
+//                        Log.d("SHAKE", "Shake, Rattle, and Roll");
+                            this.uiThreadHandler.shake();
+                        }
+                    }
+                }
                 break;
             case Sensor.TYPE_MAGNETIC_FIELD:
                 this.magnetometerReading = event.values.clone();
@@ -261,11 +286,11 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         }
 
         this.mSensorManager.getRotationMatrix(rotationMatrix, null, this.accelerometerReading, this.magnetometerReading);
-        this.mSensorManager.getOrientation(rotationMatrix, orientationAngels);
+        this.mSensorManager.getOrientation(rotationMatrix, orientationAngles);
 
-        float azimuth = orientationAngels[0];
-        float pitch = orientationAngels[1];
-        float roll = orientationAngels[2];
+        float azimuth = orientationAngles[0];
+        float pitch = orientationAngles[1];
+        float roll = orientationAngles[2];
 
         if (Math.abs(azimuth) < VALUE_DRIFT) {
             azimuth = 0;
@@ -277,16 +302,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
             roll = 0;
         }
 
-//        TextView tv_azimuth = findViewById(R.id.tv_azimuth_result);
-//        tv_azimuth.setText(azimuth+"");
-//
-//
-//        TextView tv_pitch = findViewById(R.id.tv_pitch_result);
-//        tv_pitch.setText(pitch+"");
-//
-//
-//        TextView tv_roll = findViewById(R.id.tv_roll_result);
-//        tv_roll.setText(roll+"");
     }
 
     @Override
@@ -374,4 +389,17 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         }
     }
 
+    public void addBonusPoint(){
+        this.gameFragment.addBonusScore();
+    }
+
+    public void setGameStart(){
+        this.gameStart = true;
+    }
+    public void setGameStop(){
+        this.gameStart = false;
+    }
+    public boolean getGameState(){
+        return this.gameStart;
+    }
 }

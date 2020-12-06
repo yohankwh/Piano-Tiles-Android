@@ -52,5 +52,9 @@ public class UIThreadHandler extends Handler {
     public void setFlagTrue(){
         this.flag = true;
     }
+    public void shake(){this.mainActivity.addBonusPoint();}
 
+    public void setGameStart(){this.mainActivity.setGameStart();}
+    public void setGameStop(){this.mainActivity.setGameStop();}
+    public boolean getGameState(){return this.mainActivity.getGameState();}
 }

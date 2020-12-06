@@ -113,6 +113,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     public void onClick(View v) {
         if(v==this.startBtn){
             initiateCanvas();
+            this.uiThreadHandler.setGameStart();
             this.startBtn.setVisibility(View.GONE);
         }
     }
@@ -146,10 +147,11 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         //if x, y is in range within the rectangle, add score, else game over?
         if(x>=curX && x<=curX+tileWidth && y>curY && y<=curY+200){
             this.allowPass = true;
-            this.addScore();
+            this.addScore(20);
         }else{
             this.allowPass = false;
             this.uiThreadHandler.setFlagFalse();
+            this.uiThreadHandler.setGameStop();
             if(this.highScore == this.score){
                 updateHighScore(this.score);
             }
@@ -158,17 +160,19 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
 
     public void resetAllowPass(){
         this.allowPass = false;
-
     }
 
-    public void addScore(){
-        this.score+=20;
-        if(this.score>this.highScore){
-            this.highScore = this.score;
-            this.highScoreHolder.setText(this.score+"");
-            updateHighScore(this.score);
+    public void addScore(int score){
+        if(this.uiThreadHandler.getGameState()){
+            this.score+=score;
+            if(this.score>this.highScore){
+                this.highScore = this.score;
+                this.highScoreHolder.setText(this.score+"");
+                updateHighScore(this.score);
+            }
+            this.scoreHolder.setText(this.score+"");
+
         }
-        this.scoreHolder.setText(this.score+"");
     }
 
     public void setHighScore(int score){
@@ -180,6 +184,9 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         this.fragmentListener.updateHighScore(newHighScore);
     }
 
+    public void addBonusScore(){
+        addScore(5);
+    }
 }
 
 
