@@ -58,3 +58,4 @@ public class UIThreadHandler extends Handler {
     public void setGameStop(){this.mainActivity.setGameStop();}
     public boolean getGameState(){return this.mainActivity.getGameState();}
 }
+

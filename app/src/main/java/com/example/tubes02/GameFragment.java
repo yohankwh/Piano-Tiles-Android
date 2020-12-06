@@ -57,7 +57,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         this.highScoreHolder = view.findViewById(R.id.hi_score_tv);
         this.startBtn = view.findViewById(R.id.tv_game_start);
         this.startBtn.setOnClickListener(this);
-        this.allowPass = false;
+        this.allowPass = true;
         this.score = 0;
         this.fragmentListener.loadHighScore();
 
@@ -119,15 +119,21 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     }
 
     public void move(int newPosX, int newPosY){
-        this.curX = newPosX;
-        this.curY = newPosY;
-        this.resetCanvas();
-        Paint paint = new Paint();
-        int mColorTest = ResourcesCompat.getColor(getResources(),R.color.teal_200, null);
-        paint.setColor(mColorTest);
 
-        mCanvas.drawRect(newPosX, newPosY, newPosX+this.tileWidth,newPosY+200, paint);
         this.ivCanvas.invalidate();
+
+        while(this.allowPass == true){
+            this.curX = newPosX;
+            this.curY = newPosY;
+            this.resetCanvas();
+            Paint paint = new Paint();
+            int mColorTest = ResourcesCompat.getColor(getResources(),R.color.teal_200, null);
+            paint.setColor(mColorTest);
+            mCanvas.drawRect(newPosX, newPosY, newPosX+this.tileWidth,newPosY+200, paint);
+
+        }
+
+
     }
 
     @Override
