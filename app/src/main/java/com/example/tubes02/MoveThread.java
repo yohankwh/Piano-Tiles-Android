@@ -61,10 +61,8 @@ public class MoveThread implements Runnable{
                 }else{
                     if(this.uiThreadHandler.isPassAllowed()){
                         check = true;
-                        Log.d("Action is :","V A L I D");
                     }else{
                         check = false;
-                        Log.d("Action is :","NOT VALID");
 
                     }
                     break;
@@ -81,13 +79,6 @@ public class MoveThread implements Runnable{
         Thread.interrupted();
     }
 
-//    private Runnable MyThread = new Runnable()
-//    {
-//        @Override
-//        public void run() {
-//            handler.removeCallbacks(MyThread);
-//        }
-//    };
 
 
 

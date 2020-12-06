@@ -62,12 +62,6 @@ public class MediaPlayers extends Service implements MediaPlayer.OnPreparedListe
         mediaPlayer.stop();
         mediaPlayer.release();
     }
-//
-//    @Override
-//    protected void onStop(){
-//        super.onStop();
-//        stopPlayer();
-//    }
 
     @Nullable
     @Override

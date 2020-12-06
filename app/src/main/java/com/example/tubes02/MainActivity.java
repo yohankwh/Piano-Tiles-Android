@@ -97,8 +97,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     public void changePage(int page) {
         FragmentTransaction ft = this.fragmentManager.beginTransaction();
         if (page == 2) {
-//            this.playMusic(!back);
-//            bgPianoTile();
+            this.playMusic(!back);
             if (this.gameFragment.isAdded()) {
                 ft.show(this.gameFragment);
 
@@ -148,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 
         if(!content.equals("")){
             val = Integer.parseInt(content);
-        }//else val is = 0
+        }
 
         setHighScore(val);
     }
@@ -206,11 +205,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         super.onDestroy();
     }
 
-//    public void bgPianoTile(){
-//        Intent intent = new Intent(this, GameActivity.class);
-//        startActivity(intent);
-//        finish();
-//    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -239,8 +233,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
             case Sensor.TYPE_ACCELEROMETER:
                 this.accelerometerReading = event.values.clone();
                 if(gameStart){
-                    //shake detection taken from:
-                    //https://stackoverflow.com/questions/5271448/how-to-detect-shake-event-with-android#answer-32803134
                     long curTime = System.currentTimeMillis();
                     if ((curTime - mLastShakeTime) > MIN_TIME_BETWEEN_SHAKES_MILLISECS) {
 
@@ -251,11 +243,9 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
                         double acceleration = Math.sqrt(Math.pow(x, 2) +
                                 Math.pow(y, 2) +
                                 Math.pow(z, 2)) - SensorManager.GRAVITY_EARTH;
-//                    Log.d("SHAKE","Acceleration is " + acceleration + "m/s^2");
 
                         if (acceleration > SHAKE_THRESHOLD) {
                             mLastShakeTime = curTime;
-//                        Log.d("SHAKE", "Shake, Rattle, and Roll");
                             this.uiThreadHandler.shake();
                         }
                     }
@@ -267,14 +257,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         }
 
         if (event.values[1] < 6.5 && event.values[1] > -6.5) {
-            if (oritentation != -1) {
-//                Log.d("Sensor", "Landscape");
-            }
             oritentation = 1;
         } else {
-            if (oritentation != 0) {
-//                Log.d("Sensor", "Portrait");
-            }
             oritentation = 0;
         }
 
@@ -304,25 +288,19 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 
     @Override
     public void onOrientationChange(OrientationManager.ScreenOrientation screenOrientation) {
-//        TextView tv_orientation = findViewById(R.id.tv_orientation_result);
         switch (screenOrientation) {
             case PORTRAIT:
-
-//                tv_orientation.setText("reversed_potrait");
                 Log.d("oritentation", "reversed_potrait");
             case REVERSED_PORTRAIT:
                 this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//                tv_orientation.setText("potrait");
                 Log.d("oritentation", "potrait");
                 break;
             case REVERSED_LANDSCAPE:
                 this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-//                tv_orientation.setText("reversed_landscape");
                 Log.d("oritentation", "reversed_landscape");
                 break;
             case LANDSCAPE:
                 this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//                tv_orientation.setText("landscape");
                 Log.d("oritentation", "landscape");
                 break;
         }
@@ -346,8 +324,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         File file = new File(this.getFilesDir(),"score.txt");
 
         try (FileOutputStream fop = new FileOutputStream(file)) {
-
-            // if file doesn't exists, then create it
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -356,7 +332,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 
             fop.write(contentInBytes);
             fop.flush();
-            fop.close();
 
         } catch (IOException e) {
             e.printStackTrace();
