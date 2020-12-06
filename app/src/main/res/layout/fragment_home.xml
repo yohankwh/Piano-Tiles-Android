@@ -21,14 +21,6 @@
             android:textColor="@color/black"/>
 
         <Button
-            android:id="@+id/score_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/gray"
-            android:text="@string/score_btn"
-            android:textColor="@color/black"/>
-
-        <Button
             android:id="@+id/ext_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
