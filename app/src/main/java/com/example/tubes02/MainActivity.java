@@ -13,6 +13,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,11 +32,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements FragmentListener, View.OnClickListener, SensorEventListener, OrientationManager.OrientationListener, IMainActivity {
     private FragmentManager fragmentManager;
-    private MainPresenter presenter;
+
     private HomeFragment homeFragment;
     private GameFragment gameFragment;
     private MediaPlayers mediaPlayer;
     private UIThreadHandler uiThreadHandler;
+    private MoveThread mvThread;
     private boolean back;
     private boolean gameStart;
 
@@ -62,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         this.back = true;
         this.gameStart = false;
 
-        this.presenter = new MainPresenter(this, this);
         this.fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction ft = this.fragmentManager.beginTransaction();
 
@@ -166,6 +167,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 //        this.moveThread.thread.interrupt();
         this.back = true;
         this.playMusic(this.back);
+        this.gameFragment.stopThread();
+
 
 //        finish();
         super.onBackPressed();
@@ -178,6 +181,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
             this.back = true;
             this.playMusic(this.back);
         }
+
         return super.onKeyDown(keyCode, event);
     }
 

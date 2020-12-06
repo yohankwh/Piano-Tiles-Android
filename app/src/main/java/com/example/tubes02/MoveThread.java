@@ -52,9 +52,10 @@ public class MoveThread implements Runnable{
 
                 if(arrPos[1]<this.heightLimit+20){//tile-pass-no-touch check
                     try{
-                        Thread.sleep(50);
+                        thread.sleep(50);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
+                        break;
                     }
                     this.uiThreadHandler.move(arrPos);
                     arrPos[1] = arrPos[1]+incrY;
@@ -75,8 +76,9 @@ public class MoveThread implements Runnable{
         }
     }
 
-    public void stop(){
-        Thread.interrupted();
+    public void onStop(){
+
+        thread.interrupt();
     }
 
 

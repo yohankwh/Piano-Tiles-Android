@@ -15,7 +15,6 @@ public class MediaPlayers extends Service implements MediaPlayer.OnPreparedListe
         MediaPlayer.OnCompletionListener {
     private MediaPlayer mediaPlayer;
 
-    private ArrayList<Song> songs;
 
     @Override
     public void onCreate() {

@@ -37,12 +37,17 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     private int tileWidth;
     private int heightLimit;
 
+    private boolean isLose;
+    private LinkedList<Tile> tileList;
+
+    private MoveThread threadObj;
+
+
     private int curX;
     private int curY;
 
     private int highScore;
     private int score;
-
 
     public void setUIThreadHandler(UIThreadHandler ui){
         this.uiThreadHandler = ui;
@@ -90,7 +95,14 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         this.heightLimit = this.ivCanvas.getHeight();
 
         int[] initPos = {10, 50};
-        MoveThread threadObj = new MoveThread(this.uiThreadHandler, initPos, this.ivCanvas.getHeight(), this.tileWidth);
+        if(threadObj == null){
+            this.threadObj = new MoveThread(this.uiThreadHandler, initPos, this.ivCanvas.getHeight(), this.tileWidth);
+        }else{
+            this.threadObj.onStop();
+            this.threadObj.thread.interrupt();
+            this.threadObj = new MoveThread(this.uiThreadHandler, initPos, this.ivCanvas.getHeight(), this.tileWidth);
+        }
+
         threadObj.moveObject();
 
 //        DrawerAsyncTask dat = new DrawerAsyncTask();
@@ -112,6 +124,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     @Override
     public void onClick(View v) {
         if(v==this.startBtn){
+            this.uiThreadHandler.setFlagTrue();
             initiateCanvas();
             this.uiThreadHandler.setGameStart();
             this.startBtn.setVisibility(View.GONE);
@@ -155,6 +168,7 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
             this.allowPass = true;
             this.addScore(20);
         }else{
+            this.threadObj.onStop();
             this.allowPass = false;
             this.uiThreadHandler.setFlagFalse();
             this.uiThreadHandler.setGameStop();
@@ -196,6 +210,73 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     public void addBonusScore(){
         addScore(5);
     }
+
+
+    public int getHeightCanvas(){
+        return this.ivCanvas.getMaxHeight();
+    }
+
+
+
+    private class DrawerAsyncTask extends AsyncTask<Integer, Integer, String>{
+        private int countNumber;
+        protected void onPreExecute(){
+//            this.countNumber = 0;
+        }
+
+        protected void onProgressUpdate(Integer... progress){
+            int count = progress[0];
+
+            scoreHolder.setText(Integer.toString(count));
+        }
+
+        protected void onPostExecute(String result) {
+//            btn.setText("START");
+//            counterView.setText("0");
+//            countNumber = 0;
+//            Toast toast = Toast.makeText(counterView.getContext(),"Counter "+(position+1)+" finished", Toast.LENGTH_SHORT);
+//            toast.show();
+//            //Challenge 7.
+//            renewJob();
+        }
+
+        protected void publishProgress(int count){
+            this.onProgressUpdate(count);
+        }
+
+
+        @Override
+        protected String doInBackground(Integer... integers) {
+
+            int posX = integers[0];
+            int posY = integers[1];
+
+            Log.d("x is: ",posX+"");
+            Log.d("y is: ",posY+"");
+
+            int incrY = 20;
+
+            int arrPos[] = {posX, posY};
+
+            while(arrPos[1]<heightLimit+20){
+                try{
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                move(arrPos[0],arrPos[1]);
+
+                arrPos[1] = arrPos[1]+incrY;
+            }
+            Log.d("finish", "true");
+            return null;
+        }
+    }
+
+    public void stopThread(){
+        this.threadObj.onStop();
+    }
+
 }
 
 
