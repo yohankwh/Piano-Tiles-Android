@@ -20,7 +20,20 @@
                 android:text="Score: " />
 
             <TextView
+                android:layout_weight="1"
                 android:id="@+id/score_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="High Score: " />
+
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/hi_score_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"/>

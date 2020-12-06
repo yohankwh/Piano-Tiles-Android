@@ -53,7 +53,4 @@ public class UIThreadHandler extends Handler {
         this.flag = true;
     }
 
-    public void setFlagTrue(){
-        this.flag = true;
-    }
 }

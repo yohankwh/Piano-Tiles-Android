@@ -19,12 +19,16 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 //import com.example.tubes02.TempRepo.AppConstants;
 //import com.example.tubes02.TempRepo.GameActivity;
 
-public class MainActivity extends AppCompatActivity implements FragmentListener, View.OnClickListener, SensorEventListener, OrientationManager.OrientationListener {
+public class MainActivity extends AppCompatActivity implements FragmentListener, View.OnClickListener, SensorEventListener, OrientationManager.OrientationListener, IMainActivity {
     private FragmentManager fragmentManager;
     private MainPresenter presenter;
     private HomeFragment homeFragment;
@@ -52,11 +56,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         setContentView(R.layout.activity_main);
         this.back = true;
 
-//        AppConstants.initialization(this.getApplicationContext());
-//        this.test[0]  =40;
-//        this.test[1] = 40;
-
-        this.presenter = new MainPresenter(this);
+        this.presenter = new MainPresenter(this, this);
         this.fragmentManager = this.getSupportFragmentManager();
         FragmentTransaction ft = this.fragmentManager.beginTransaction();
 
@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
         ft.add(R.id.fragment_container, this.homeFragment)
                 .addToBackStack(null)
                 .commit();
-
 
 //        sensor
         this.mSensorManager = (SensorManager) getSystemService(
@@ -130,6 +129,28 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
     public void closeApplication() {
         this.moveTaskToBack(true);
         this.finish();
+    }
+
+    @Override
+    public void updateHighScore(int val) {
+        saveToFile(val+"");
+    }
+
+    @Override
+    public void loadHighScore() {
+        String content = readFile();
+        int val = 0;
+
+        if(!content.equals("")){
+            val = Integer.parseInt(content);
+        }//else val is = 0
+
+        setHighScore(val);
+    }
+
+    @Override
+    public void setHighScore(int val) {
+        this.gameFragment.setHighScore(val);
     }
 
     public void move(int x, int y) {
@@ -229,12 +250,12 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 
         if (event.values[1] < 6.5 && event.values[1] > -6.5) {
             if (oritentation != -1) {
-                Log.d("Sensor", "Landscape");
+//                Log.d("Sensor", "Landscape");
             }
             oritentation = 1;
         } else {
             if (oritentation != 0) {
-                Log.d("Sensor", "Portrait");
+//                Log.d("Sensor", "Portrait");
             }
             oritentation = 0;
         }
@@ -311,4 +332,46 @@ public class MainActivity extends AppCompatActivity implements FragmentListener,
 
         savedInstanceState.getInt("count");
     }
+
+    @Override
+    public void saveToFile(String content) {
+        File file = new File(this.getFilesDir(),"score.txt");
+
+        try (FileOutputStream fop = new FileOutputStream(file)) {
+
+            // if file doesn't exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            byte[] contentInBytes = content.getBytes();
+
+            fop.write(contentInBytes);
+            fop.flush();
+            fop.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public String readFile() {
+        File file = new File(this.getFilesDir(),"score.txt");
+
+        try (FileInputStream fis = new FileInputStream(file)) {
+
+            int content;
+            String msg = "";
+            while ((content = fis.read()) != -1) {
+                msg=msg+(char)content;
+            }
+            return msg;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
 }

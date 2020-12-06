@@ -31,14 +31,16 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
     protected ImageView ivCanvas;
     protected Bitmap mBitmap;
 
-    private TextView startBtn, scoreHolder;
+    private TextView startBtn, scoreHolder, highScoreHolder;
     public boolean allowPass;
+    public boolean allowScore;
     private int tileWidth;
     private int heightLimit;
 
     private int curX;
     private int curY;
 
+    private int highScore;
     private int score;
 
 
@@ -52,10 +54,12 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         View view = inflater.inflate(R.layout.fragment_game, container, false);
         this.ivCanvas = view.findViewById(R.id.iv_main);
         this.scoreHolder = view.findViewById(R.id.score_tv);
+        this.highScoreHolder = view.findViewById(R.id.hi_score_tv);
         this.startBtn = view.findViewById(R.id.tv_game_start);
         this.startBtn.setOnClickListener(this);
         this.allowPass = false;
         this.score = 0;
+        this.fragmentListener.loadHighScore();
 
         return view;
     }
@@ -146,17 +150,36 @@ public class GameFragment extends Fragment implements View.OnClickListener, View
         }else{
             this.allowPass = false;
             this.uiThreadHandler.setFlagFalse();
+            if(this.highScore == this.score){
+                updateHighScore(this.score);
+            }
         }
     }
 
     public void resetAllowPass(){
         this.allowPass = false;
+
     }
 
     public void addScore(){
         this.score+=20;
+        if(this.score>this.highScore){
+            this.highScore = this.score;
+            this.highScoreHolder.setText(this.score+"");
+            updateHighScore(this.score);
+        }
         this.scoreHolder.setText(this.score+"");
     }
+
+    public void setHighScore(int score){
+        this.highScore = score;
+        this.highScoreHolder.setText(score+"");
+    }
+
+    public void updateHighScore(int newHighScore){
+        this.fragmentListener.updateHighScore(newHighScore);
+    }
+
 }
 
 
