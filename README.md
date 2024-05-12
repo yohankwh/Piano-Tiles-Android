@@ -1,2 +1,2 @@
-# Tubes02-Android
-Membuat game piano tiles dengan thread
+# Android - P3B Project 2
+Piano Tiles game clone
